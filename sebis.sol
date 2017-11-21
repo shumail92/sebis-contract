@@ -3,7 +3,7 @@
     @author Shumail Mohyuddin - 14/11/2017
  */
 
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.11;
 
 contract SebisContract {
     address public owner;
@@ -22,7 +22,7 @@ contract SebisContract {
     );
 
     modifier ifFunds(address _to, uint _value) {
-        if (balances[msg.sender] <= _value) {
+        if (balances[owner] <= _value) {
             FailedTransaction(msg.sender, _to, _value);
             throw;
         }
@@ -39,10 +39,10 @@ contract SebisContract {
     }
 
     // we know who's sending transaction by msg.sender
-    function transfer(address _to, uint _value) ifFunds(_to, _value) returns (bool success) {
-        balances[msg.sender] -= _value;
-        balances[_to] += _value;
-        SuccessfulTransaction(msg.sender, _to, _value);
+    function transfer() ifFunds(msg.sender, msg.value) payable returns (bool success) {
+        balances[owner] -= msg.value;
+        balances[msg.sender] += msg.value;
+        SuccessfulTransaction(owner, msg.sender, msg.value);
         return true;
     }
 }
